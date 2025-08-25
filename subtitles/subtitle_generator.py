@@ -9,19 +9,19 @@ import sys
 from googletrans import Translator
 import spacy
 
-# Fix SSL certificate issues on Mac
+# Fixes SSL certificate issues
 ssl._create_default_https_context = lambda: ssl.create_default_context(cafile=certifi.where())
 
-# Load SpaCy English model for NER
+# Load SpaCy English model
 nlp = spacy.load("en_core_web_sm")
 
 def preserve_names(text):
-    """Detect names in English text and replace with placeholders"""
+    # Detect names in English text and replace with placeholders
     # Title-case text to help SpaCy detect names
     doc = nlp(text.title())
     names = [ent.text for ent in doc.ents if ent.label_ == "PERSON"]
 
-    # Heuristic: include any capitalized word not already in names
+    # include any capitalized word not already in names
     words = text.split()
     for w in words:
         if w[0].isupper() and w not in names:
@@ -33,7 +33,7 @@ def preserve_names(text):
     return text_with_placeholders, names
 
 def restore_names(text, names):
-    """Replace placeholders with original names"""
+     # Replace placeholders with original names
     restored_text = text
     for i, name in enumerate(names):
         restored_text = restored_text.replace(f"__NAME{i}__", name)
@@ -46,18 +46,18 @@ def video_to_subtitles(video_path):
 
     audio_path = "temp_audio.wav"
     try:
-        # ------------------- Extract audio -------------------
+        # Extracting audio
         print("Extracting audio...")
         ffmpeg.input(video_path).output(audio_path, ac=1, ar=16000).run(overwrite_output=True)
 
-        # ------------------- Transcribe with Whisper -------------------
+        # Transcribing with whisper
         print("Loading Whisper model...")
         model = whisper.load_model("base")
 
         print("Transcribing audio...")
         result = model.transcribe(audio_path)
 
-        # ------------------- Create English subtitles -------------------
+        # Creating English subtitles
         print("Creating English subtitles...")
         subs_en = pysrt.SubRipFile()
         for i, segment in enumerate(result["segments"]):
@@ -75,7 +75,7 @@ def video_to_subtitles(video_path):
         subs_en.save(output_srt_en, encoding='utf-8')
         print(f"English subtitles saved as {output_srt_en}")
 
-        # ------------------- Translate to Amharic with name preservation -------------------
+        # Translates to amharic with the name preservationg
         print("Translating subtitles to Amharic...")
         translator = Translator()
         subs_am = pysrt.SubRipFile()
@@ -100,7 +100,7 @@ def video_to_subtitles(video_path):
         print(f"Amharic subtitles saved as {output_srt_am}")
 
     finally:
-        # Clean up temporary audio
+        # Cleans up temporary audio
         if os.path.exists(audio_path):
             os.remove(audio_path)
 
