@@ -1,0 +1,131 @@
+.courses-page {
+  padding: 100px 0 50px;
+  min-height: 100vh;
+}
+
+.courses-page h1 {
+  text-align: center;
+  margin-bottom: 40px;
+  color: #1e40af;
+}
+
+.courses-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 30px;
+  padding: 20px;
+}
+
+.course-card {
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.course-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+}
+
+.course-image {
+  height: 200px;
+  overflow: hidden;
+}
+
+.course-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.course-placeholder {
+  height: 100%;
+  background: linear-gradient(135deg, #1e40af 0%, #7e22ce 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  font-weight: 600;
+}
+
+.course-content {
+  padding: 20px;
+}
+
+.course-content h3 {
+  margin: 0 0 10px;
+  color: #1e293b;
+  font-size: 1.2rem;
+}
+
+.course-description {
+  color: #64748b;
+  margin-bottom: 15px;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.course-meta {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.course-level, .course-duration {
+  padding: 4px 8px;
+  border-radius: 15px;
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
+.course-level {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.course-duration {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.course-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.course-price {
+  font-weight: 600;
+  color: #1e40af;
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 0.9rem;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 100px 20px;
+  font-size: 1.2rem;
+}
+
+.error {
+  color: #dc2626;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .courses-grid {
+    grid-template-columns: 1fr;
+    padding: 10px;
+  }
+  
+  .courses-page {
+    padding: 80px 0 30px;
+  }
+}

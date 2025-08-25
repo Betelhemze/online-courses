@@ -1,6 +1,7 @@
-import React from 'react'
-import './Hero.css'
-import arrow from "../../assets/arrow.png"
+import React from 'react';
+import { Link } from 'react-router-dom';
+import './Hero.css';
+
 const Hero = () => {
   return (
     <div className="hero container">
@@ -12,9 +13,9 @@ const Hero = () => {
           today to transform your future, and be part of a dynamic community. 🚀
         </p>
         <div className="btns">
-          <button className="btn">Get Started</button>
+          <Link to="/register" className="btn">Get Started</Link>
           <div className="explore-link">
-            <a href="#">Explore</a>
+            <Link to="/courses">Explore</Link>
             <span>→</span>
           </div>
         </div>
@@ -23,4 +24,4 @@ const Hero = () => {
   );
 }
 
-export default Hero
+export default Hero;
