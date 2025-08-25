@@ -191,3 +191,6 @@ function changeSubtitle(videoId, language) {
 - **Testing:** Verify file storage, database entries, frontend display, and language switching.  
 
 **This document provides step-by-step instructions for integrating the subtitles Python code into the web application backend and frontend, including database setup, API endpoints, and frontend integration.**
+
+*If any name errors/placeholder type error occurs, Eg. ((___NAM0__), (__ 16__ ),(___NAL0__)...) remove the part of the script with spacy where it recognizes names*
+
