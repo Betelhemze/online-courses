@@ -192,7 +192,8 @@ function changeSubtitle(videoId, language) {
 
 **This document provides step-by-step instructions for integrating the subtitles Python code into the web application backend and frontend, including database setup, API endpoints, and frontend integration.**
 
-*If any name errors/placeholder type error occurs, Eg. ((___NAM0__), (__ 16__ ),(___NAL0__)...) remove the part of the script with spacy where it recognizes names*
+**If any placeholder or name-related errors occur (e.g., ___NAM0__, __ 16__, ___NAL0__), remove the section of the script that uses spaCy to detect names and replace them with placeholders.**
+
 ```python
 def preserve_names(text):
     # Detect names in English text and replace with placeholders
