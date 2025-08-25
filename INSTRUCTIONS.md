@@ -1,55 +1,72 @@
-# Subtitles Integration Guide
+# Subtitles Integration Detailed Guide
 
 ## 1. Folder Structure
 
-Copy the entire `subtitles/` folder into the backend project directory. Maintain the following structure:
+1. Locate the folder named `subtitles/` on your local machine.  
+2. Copy the entire `subtitles/` folder into the backend project directory. The backend project directory is the root directory of the web application.  
+3. The folder must maintain the exact structure shown below. Do not rename any files or folders.  
 
 ```
 subtitles/
-├─ generator.py       # Main script for transcription, translation, and subtitle file creation
-├─ requirements.txt   # Lists Python dependencies needed to run generator.py
-└─ any other resources # e.g., sample subtitle files or config files
+├─ generator.py       # Main Python script. Performs transcription from audio to English, cleans the text, translates it to Amharic, and generates .srt subtitle files.
+├─ requirements.txt   # Text file listing all Python packages required to run generator.py.
+└─ any other resources # Example: sample subtitle files, configuration files, or additional scripts. These are optional, but if present, include them as is.
 ```
 
 ---
 
-## 2. Installing Dependencies
+## 2. Installing Python Dependencies
 
-Navigate to the `subtitles/` folder and install dependencies:
+1. Open a terminal or command prompt.  
+2. Navigate to the `subtitles/` folder using the `cd` command. Example:
+
+```bash
+cd path/to/backend/subtitles
+```
+
+3. Ensure you are using **Python version 3.11 or higher**. You can check your Python version with:
+
+```bash
+python3 --version
+```
+
+4. Install all Python dependencies by executing:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**Key dependencies to ensure are installed:**
+5. Ensure the following packages are installed (these are mandatory):
 
-- `whisper` – for automatic speech recognition  
-- `deep-translator` – for translating English subtitles to Amharic  
-- `ffmpeg` – for extracting audio from video files  
-- `torch` – backend for Whisper  
-- Any additional dependencies listed in `requirements.txt`  
+- `whisper` – Automatic Speech Recognition engine for transcribing audio into English.  
+- `deep-translator` – Translates English subtitles into Amharic.  
+- `ffmpeg` – Command-line tool used to extract audio from video files.  
+- `torch` – Backend library for running Whisper.  
+- Any additional packages listed inside `requirements.txt`.
 
-**Note:** Ensure the environment is Python 3.11+.
+6. Confirm that all packages installed without errors. If any package failed, the script will not run.
 
 ---
 
-## 3. Audio and Subtitle Processing
+## 3. How generator.py Works
 
-`generator.py` performs the following tasks:
+`generator.py` is the main Python script and must be called from the backend. Its functions are as follows:
 
-1. Extracts audio from video files using `ffmpeg`.  
-2. Transcribes the audio into English text using Whisper.  
-3. Cleans transcription text to remove unwanted tokens and placeholders.  
-4. Translates English subtitles into Amharic using `deep-translator`.  
-5. Creates `.srt` subtitle files with proper timestamps.  
+1. Accepts video files (MP4, MOV, etc.) as input.  
+2. Extracts the audio portion from the video using `ffmpeg`.  
+3. Transcribes the audio into English text using Whisper.  
+4. Cleans the English text by removing unwanted placeholders, special tokens, and formatting artifacts.  
+5. Translates the cleaned English subtitles into Amharic using `deep-translator`.  
+6. Creates `.srt` subtitle files for each language with correct timestamps.  
+7. Returns the file paths of the generated subtitles.  
 
-The script is modular, so backend code can call its functions directly.
+**Important:** The script is modular. Each function can be imported and called separately by backend code.  
 
 ---
 
 ## 4. Database Integration
 
-Create a new table `subtitles` in your database:
+1. In your web application's database, create a table called `subtitles`. Use the exact SQL code below:
 
 ```sql
 CREATE TABLE subtitles (
@@ -62,11 +79,15 @@ CREATE TABLE subtitles (
 );
 ```
 
-- `video_id` links the subtitle to a specific video.  
-- `language` stores the subtitle language (e.g., `en`, `am`).  
-- `file_path` stores the location of the `.srt` file on the server.  
-- `uploaded_at` logs the timestamp of upload.  
-- **Tip:** Index `video_id` and `language` for efficient retrieval.
+2. Definitions of each column:
+
+- `id` – Auto-incrementing unique identifier for each subtitle entry.  
+- `video_id` – The ID of the video to which the subtitle belongs. Must match the `id` in the `videos` table.  
+- `language` – Language code of the subtitle. Example: `en` for English, `am` for Amharic.  
+- `file_path` – Absolute or relative server path to the `.srt` file.  
+- `uploaded_at` – Timestamp recording when the subtitle was uploaded.  
+
+3. **Recommendation:** Create database indexes on `video_id` and `language` for fast query performance.
 
 ---
 
@@ -74,28 +95,28 @@ CREATE TABLE subtitles (
 
 ### Upload Endpoint
 
-Add an API route to handle subtitle uploads:
+Create an API route to allow uploading subtitles:
 
 ```python
 @app.route('/upload_subtitle', methods=['POST'])
 def upload_subtitle():
-    video_id = request.form['video_id']
-    language = request.form['language']
-    file = request.files['file']
-    path = f"uploads/subtitles/{video_id}_{language}.srt"
-    file.save(path)
-    
+    video_id = request.form['video_id']           # Read video ID from POST form data
+    language = request.form['language']           # Read subtitle language from POST form data
+    file = request.files['file']                  # Read uploaded .srt file from POST request
+    path = f"uploads/subtitles/{video_id}_{language}.srt"  # Construct path to save the file
+    file.save(path)                               # Save file to server
+
     cursor.execute(
         "INSERT INTO subtitles (video_id, language, file_path) VALUES (%s, %s, %s)",
-        (video_id, language, path)
+        (video_id, language, path)               # Insert entry into the subtitles table
     )
-    db.commit()
-    return jsonify({"status": "success"})
+    db.commit()                                   # Commit the transaction
+    return jsonify({"status": "success"})        # Return JSON response
 ```
 
 ### Fetch Endpoint
 
-Allow the frontend to request subtitles:
+Create an API route to retrieve subtitles for a given video and language:
 
 ```python
 @app.route('/get_subtitle/<int:video_id>/<string:language>', methods=['GET'])
@@ -104,9 +125,9 @@ def get_subtitle(video_id, language):
         "SELECT file_path FROM subtitles WHERE video_id=%s AND language=%s",
         (video_id, language)
     )
-    result = cursor.fetchone()
+    result = cursor.fetchone()                    # Fetch first result
     if result:
-        return send_file(result[0])
+        return send_file(result[0])               # Return .srt file
     return jsonify({"error": "Subtitle not found"}), 404
 ```
 
@@ -114,7 +135,7 @@ def get_subtitle(video_id, language):
 
 ## 6. Frontend Integration
 
-Update the video player to include `<track>` tags:
+1. Update the HTML `<video>` tag to include a `<track>` element for subtitles:
 
 ```html
 <video id="course-video" controls>
@@ -123,26 +144,41 @@ Update the video player to include `<track>` tags:
 </video>
 ```
 
-- Use JavaScript to dynamically change the `src` of `<track>` based on the user-selected language via the `/get_subtitle` endpoint.
+2. Use JavaScript to dynamically change the `src` of `<track>` based on the user-selected language via the `/get_subtitle` endpoint. Example:
+
+```javascript
+function changeSubtitle(videoId, language) {
+    const track = document.getElementById('subtitle-track');
+    track.src = `/get_subtitle/${videoId}/${language}`;
+    track.load();  // Reload the track
+}
+```
 
 ---
 
-## 7. Testing
+## 7. Testing Instructions
 
-1. Upload subtitles for at least one video in English and Amharic.  
-2. Verify:  
-   - Files are saved correctly on the server.  
-   - Database entries exist in the `subtitles` table.  
-   - Frontend loads and displays subtitles correctly.  
-   - Switching between languages for the same video works properly.
+1. Upload subtitles for at least one video in **English** and **Amharic**.  
+2. Verify the following:
+
+- Files are saved in the correct server folder.  
+- Database entries exist in the `subtitles` table.  
+- Frontend video player displays subtitles correctly.  
+- Switching between languages works correctly without errors.  
+
+3. Repeat tests with multiple videos and ensure timestamps match audio.
 
 ---
 
 ## 8. Deployment Notes
 
-- Ensure server permissions allow reading/writing subtitle files.  
+- Ensure server permissions allow reading/writing files in the subtitles folder.  
 - Backup existing subtitle folders before deployment.  
-- Implement error handling for missing files, database issues, or translation failures.
+- Implement error handling in case of:
+
+  - Missing subtitle files  
+  - Database connection errors  
+  - Translation failures  
 
 ---
 
@@ -150,6 +186,8 @@ Update the video player to include `<track>` tags:
 
 - **Folder:** `subtitles/`  
 - **Database table:** `subtitles`  
-- **Backend:** Upload and fetch endpoints  
-- **Frontend:** Video player `<track>` integration  
-- Test thoroughly with multiple videos and languages.
+- **Backend:** Upload and fetch API endpoints  
+- **Frontend:** `<track>` element integration for video player  
+- **Testing:** Verify file storage, database entries, frontend display, and language switching.  
+
+**This document provides step-by-step instructions for integrating the subtitles Python code into the web application backend and frontend, including database setup, API endpoints, and frontend integration.**
