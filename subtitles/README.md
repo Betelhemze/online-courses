@@ -145,12 +145,6 @@ Feel free to contribute by:
 
 ---
 
-## License
-
-This project is **MIT licensed**, free to use and modify for personal or commercial purposes.
-
----
-
 ## References
 
 - [OpenAI Whisper](https://github.com/openai/whisper)  
