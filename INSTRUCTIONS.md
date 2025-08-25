@@ -195,7 +195,7 @@ function changeSubtitle(videoId, language) {
 **If any placeholder or name-related errors occur (e.g., ___NAM0__, __ 16__, ___NAL0__), remove the section of the script that uses spaCy to detect names and replace them with placeholders.**
 
 ```python
-                    -------------------""" this section """-------------------
+                    -------------------""" This section """-------------------
 def preserve_names(text):
     # Detect names in English text and replace with placeholders
     # Title-case text to help SpaCy detect names
