@@ -1,0 +1,93 @@
+.contact {
+  margin: 80px auto;
+  max-width: 90%;
+}
+
+/* Title centered at top */
+.contact-title {
+  text-align: center;
+  margin-bottom: 50px;
+}
+
+.contact-title h2 {
+  font-size: 32px;
+  text-transform: uppercase;
+  font-weight: bold;
+}
+
+.contact-title h3 {
+  font-size: 20px;
+  font-weight: 500;
+  margin-top: 8px;
+  color: #444;
+}
+
+/* Row holds both columns */
+.contact-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 40px;
+}
+
+.contact-col {
+  flex-basis: 48%;
+  color: rgb(129, 122, 122);
+}
+
+.contact-col h3 {
+  color: black;
+  font-weight: 500;
+  font-size: 25px;
+  margin-bottom: 20px;
+}
+
+.contact-col p {
+  max-width: 450px;
+  line-height: 1.6;
+}
+
+.contact-col ul li {
+  display: flex;
+  align-items: center;
+  margin: 20px 0;
+}
+
+.contact-col ul li img {
+  width: 25px;
+  margin-right: 10px;
+}
+
+.contact form input,
+.contact form textarea {
+  display: block;
+  width: 100%;
+  background-color: #e6dcf1;
+  padding: 15px;
+  border: 0;
+  outline: 0;
+  margin-bottom: 15px;
+  margin-top: 5px;
+  resize: none;
+}
+
+.contact-btn {
+  color: white;
+  background-color: #88568d;
+  padding: 10px 25px;
+  border: 0px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.contact-btn:hover {
+  background-color: #6e4772;
+}
+
+/* Responsive (stack columns on small screens) */
+@media (max-width: 768px) {
+  .contact-row {
+    flex-direction: column;
+    gap: 30px;
+  }
+}

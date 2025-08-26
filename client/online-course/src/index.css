@@ -4,7 +4,9 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-font-family: "Outfit", sans-serif;
+  font-family: "Outfit", sans-serif;
+  scrollbar-width: thin;
+  scrollbar-color: #b780b7 #f0eaf0;
 }
 a{
   text-decoration: none;
@@ -25,4 +27,22 @@ a{
   cursor: pointer;
   border: 0;
   outline: 0;
+}
+html {
+  scroll-behavior: smooth;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #f0eaf0;
+  border-radius: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #b780b7;
+  border-radius: 10px;
+  border: 3px solid #f0eaf0;
 }

@@ -13,12 +13,9 @@ body {
 }
 
 .container {
-  max-width: 1200px;
-  margin: 0 auto;
   padding: 0 20px;
 }
 
-/* Utility classes */
 .text-center {
   text-align: center;
 }
@@ -31,7 +28,6 @@ body {
   margin-bottom: 20px;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
   .container {
     padding: 0 15px;

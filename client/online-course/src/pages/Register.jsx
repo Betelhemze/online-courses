@@ -15,7 +15,7 @@ const Register = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   
-  const { register } = useAuth();
+  const { register, login } = useAuth();
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -32,21 +32,28 @@ const Register = () => {
 
     console.log('Form submitted with data:', formData);
 
-    const result = await register(formData);
-    
-    console.log('Registration result:', result);
-    
-    if (result.success) {
-      console.log('Registration successful, navigating to login');
-      navigate('/login', { 
-        state: { message: 'Registration successful! Please login.' } 
-      });
-    } else {
-      console.log('Registration failed:', result.error);
-      setError(result.error);
+    try {
+      const result = await register(formData);
+      
+      console.log('Registration result:', result);
+      
+      if (result.success) {
+        console.log('Registration successful, now attempting to log in...');
+        await login(formData.username, formData.password);
+        
+        navigate('/DashBoard');
+        
+      } else {
+        console.log('Registration failed:', result.error);
+        setError(result.error);
+      }
+      
+    } catch (err) {
+      console.error('An unexpected error occurred during registration or login:', err);
+      setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   return (

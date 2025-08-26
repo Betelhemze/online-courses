@@ -11,6 +11,7 @@ const CourseDetail = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [enrolled, setEnrolled] = useState(false);
+  const [enrolling, setEnrolling] = useState(false);
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -34,13 +35,29 @@ const CourseDetail = () => {
   }, [id, user]);
 
   const handleEnroll = async () => {
+    if (!user) {
+      alert('Please login to enroll in courses');
+      return;
+    }
+
+    setEnrolling(true);
     try {
-      await axios.post(`http://localhost:8000/api/courses/${id}/enroll/`);
-      setEnrolled(true);
-      alert('Successfully enrolled in the course!');
+      const response = await axios.post(`http://localhost:8000/api/courses/${id}/enroll/`);
+      
+      if (response.status === 201 || response.status === 200) {
+        setEnrolled(true);
+        alert('Successfully enrolled in the course!');
+        // Refresh course data to update enrollment status
+        const courseResponse = await axios.get(`http://localhost:8000/api/courses/${id}/`);
+        setCourse(courseResponse.data);
+      }
     } catch (error) {
-      setError('Failed to enroll in course');
-      console.error('Error enrolling:', error);
+      console.error('Error enrolling:', error.response?.data);
+      const errorMessage = error.response?.data?.error || 'Failed to enroll in course';
+      setError(errorMessage);
+      alert(errorMessage);
+    } finally {
+      setEnrolling(false);
     }
   };
 
@@ -73,21 +90,34 @@ const CourseDetail = () => {
                 </span>
               </div>
 
-              {user ? (
-                enrolled ? (
-                  <Link to="/dashboard" className="btn btn-success">
-                    Go to Dashboard
-                  </Link>
+              {/* ENROLLMENT BUTTON */}
+              <div className="enrollment-section">
+                {user ? (
+                  enrolled ? (
+                    <div className="enrollment-status">
+                      <span className="enrolled-badge">✅ Already Enrolled</span>
+                      <Link to="/dashboard" className="btn btn-success">
+                        Go to Dashboard
+                      </Link>
+                    </div>
+                  ) : (
+                    <button 
+                      onClick={handleEnroll} 
+                      className="btn btn-primary enroll-btn"
+                      disabled={enrolling}
+                    >
+                      {enrolling ? 'Enrolling...' : 'Enroll Now'}
+                    </button>
+                  )
                 ) : (
-                  <button onClick={handleEnroll} className="btn btn-primary">
-                    Enroll Now
-                  </button>
-                )
-              ) : (
-                <Link to="/login" className="btn btn-primary">
-                  Login to Enroll
-                </Link>
-              )}
+                  <div className="login-to-enroll">
+                    <p>Please login to enroll in this course</p>
+                    <Link to="/login" className="btn btn-primary">
+                      Login to Enroll
+                    </Link>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
@@ -139,6 +169,25 @@ const CourseDetail = () => {
                 <li>Internet connection</li>
                 <li>Willingness to learn</li>
               </ul>
+            </div>
+
+            {/* Enrollment Stats */}
+            <div className="sidebar-card">
+              <h3>Course Stats</h3>
+              <div className="course-stats">
+                <div className="stat-item">
+                  <span className="stat-label">Students enrolled:</span>
+                  <span className="stat-value">{course.students_count || 0}</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">Duration:</span>
+                  <span className="stat-value">{course.duration} hours</span>
+                </div>
+                <div className="stat-item">
+                  <span className="stat-label">Level:</span>
+                  <span className="stat-value">{course.level}</span>
+                </div>
+              </div>
             </div>
           </div>
         </div>
